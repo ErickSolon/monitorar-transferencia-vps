@@ -10,14 +10,14 @@ fi
 
 echo "" > "$FILE"
 rm -f /var/lib/vnstat/vnstat.db
-/etc/init.d/vnstat stop
-/etc/init.d/vnstat start
+killall vnstatd
+/bin/vnstatd -d
 
 while true; do
     OUTPUT=$(vnstat --alert 1 1 d total $LIMIT MB -i eth0 | grep 'Alert limit exceeded!' | sed 's/ //g')
     DATA_HORA=$(date +'%d/%m/%Y %H:%M:%S')
-    /etc/init.d/vnstat stop
-    /etc/init.d/vnstat start
+    killall vnstatd
+    /bin/vnstatd -d
 
     if echo "$OUTPUT" | grep -q "Alertlimitexceeded!"; then
         echo "$DATA_HORA - Limite de $LIMIT MB atingido. Desligando a máquina..." >> "$FILE"
